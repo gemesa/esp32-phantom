@@ -50,6 +50,7 @@ $ espflash /dev/ttyUSB0 target/xtensa-esp32-none-elf/release/examples/blinky
 ```
 $ espflash /dev/ttyUSB0 target/xtensa-esp32-none-elf/release/examples/wifi-mon
 $ screen /dev/ttyUSB0 115200
+$ # press EN/RST button
 ets Jun  8 2016 00:22:57
 
 rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
