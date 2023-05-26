@@ -1,3 +1,5 @@
+// This file is a fork of https://github.com/esp-rs/esp-wifi/blob/main/examples-util/src/lib.rs
+
 #![no_std]
 
 #[cfg(feature = "esp32")]
