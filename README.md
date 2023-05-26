@@ -14,8 +14,6 @@ If you are serious about security analysis/pen testing I suggest to use an Alfa 
 
 ### Prerequisites
 
-The following tools are necessary for building:
-
 - [Rust](https://www.rust-lang.org/tools/install)
 - [Rust for Xtensa](https://esp-rs.github.io/book/installation/index.html)
 
@@ -32,7 +30,6 @@ $ rustup override set esp
 ```
 ### How to build
 
-Invoke the following command:
 
 ```
 $ cargo build --release --examples --features "esp32,wifi"
