@@ -1,7 +1,5 @@
 # esp32-phantom
 
-:warning: Work in progress! :warning:
-
 esp32-phantom is a Rust sandbox to explore the Wi-Fi and BLE capabilities of the ESP32, for example:
 - Wi-Fi monitoring
 - promiscuous mode
