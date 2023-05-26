@@ -42,7 +42,7 @@ fn main() -> ! {
 
     let wifi = get_wifi!(peripherals);
     let mut socket_set_entries: [SocketStorage; 3] = Default::default();
-    let (iface, device, mut controller, sockets) =
+    let (_iface, _device, mut controller, _sockets) =
         create_network_interface(wifi, WifiMode::Sta, &mut socket_set_entries);
 
     let client_config = Configuration::Client(ClientConfiguration {
