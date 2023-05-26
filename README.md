@@ -32,7 +32,7 @@ $ rustup override set esp
 ```
 ### How to build
 
-Invoke the following commands:
+Invoke the following command:
 
 ```
 $ cargo build --release --examples --features "esp32,wifi"
