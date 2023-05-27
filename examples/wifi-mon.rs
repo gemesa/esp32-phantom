@@ -17,9 +17,6 @@ use hal::{peripherals::Peripherals, prelude::*, Rtc};
 
 use smoltcp::iface::SocketStorage;
 
-const SSID: &str = env!("SSID");
-const PASSWORD: &str = env!("PASSWORD");
-
 #[entry]
 fn main() -> ! {
     init_logger(log::LevelFilter::Info);
@@ -46,8 +43,6 @@ fn main() -> ! {
         create_network_interface(wifi, WifiMode::Sta, &mut socket_set_entries);
 
     let client_config = Configuration::Client(ClientConfiguration {
-        ssid: SSID.into(),
-        password: PASSWORD.into(),
         ..Default::default()
     });
     let res = controller.set_configuration(&client_config);
