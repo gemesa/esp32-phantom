@@ -55,7 +55,10 @@ fn main() -> ! {
     let res: Result<(heapless::Vec<AccessPointInfo, 10>, usize), WifiError> = controller.scan_n();
     if let Ok((res, _count)) = res {
         for ap in res {
-            println!("\r{:?}", ap);
+            println!(
+                "\r{} | {:?} | {} | {} | {:?}",
+                ap.ssid, ap.bssid, ap.channel, ap.signal_strength, ap.auth_method
+            );
         }
     }
 

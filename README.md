@@ -61,10 +61,8 @@ entry 0x4007c6a0
 Configuration status: Ok(())
 Controller status: Ok(true)
 APs:
-AccessPointInfo { ssid: "xxx", bssid: [xx, xx, xx, xx, xx, xx], channel: 3, secondary_channel: None, signal_strength: -31, protocols: EnumSet(), auth_method: WPA2Personal }
-AccessPointInfo { ssid: "xxx", bssid: [xx, xx, xx, xx, xx, xx], channel: 7, secondary_channel: Above, signal_strength: -82, protocols: EnumSet(), auth_method: WPA2Personal }
-AccessPointInfo { ssid: "xxx", bssid: [xx, xx, xx, xx, xx, xx], channel: 7, secondary_channel: Above, signal_strength: -83, protocols: EnumSet(), auth_method: WPA2Personal }
-AccessPointInfo { ssid: "xxx", bssid: [xx, xx, xx, xx, xx, xx], channel: 1, secondary_channel: None, signal_strength: -89, protocols: EnumSet(), auth_method: WPA2Personal }
-AccessPointInfo { ssid: "xxx", bssid: [xx, xx, xx, xx, xx, xx], channel: 1, secondary_channel: Above, signal_strength: -89, protocols: EnumSet(), auth_method: WPAWPA2Personal }
-AccessPointInfo { ssid: "xxx", bssid: [xx, xx, xx, xx, xx, xx], channel: 1, secondary_channel: Above, signal_strength: -90, protocols: EnumSet(), auth_method: WPA2Personal }
+xxx | [xx, xx, xx, xx, xx, xx] | 3 | -30 | WPA2Personal
+xxx | [xx, xx, xx, xx, xx, xx] | 11 | -82 | WPA2Personal
+xxx | [xx, xx, xx, xx, xx, xx] | 1 | -83 | WPAWPA2Personal
+xxx | [xx, xx, xx, xx, xx, xx] | 1 | -87 | WPA2Personal
 ```
