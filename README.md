@@ -61,8 +61,8 @@ entry 0x4007c6a0
 Configuration status: Ok(())
 Controller status: Ok(true)
 APs:
-xxx | [xx, xx, xx, xx, xx, xx] | 3 | -30 | WPA2Personal
-xxx | [xx, xx, xx, xx, xx, xx] | 11 | -82 | WPA2Personal
-xxx | [xx, xx, xx, xx, xx, xx] | 1 | -83 | WPAWPA2Personal
-xxx | [xx, xx, xx, xx, xx, xx] | 1 | -87 | WPA2Personal
+xxxxx | XXXXXXXXXXXX | 3 | -32 | WPA2Personal
+xxxxx | XXXXXXXXXXXX | 7 | -79 | WPA2Personal
+xxxxx | XXXXXXXXXXXX | 7 | -79 | WPA2Personal
+xxxxx | XXXXXXXXXXXX | 11 | -86 | WPA2Personal
 ```

@@ -15,6 +15,9 @@ use hal::clock::{ClockControl, CpuClock};
 use hal::Rng;
 use hal::{peripherals::Peripherals, prelude::*, Rtc};
 
+use core::fmt::Write;
+use heapless::String;
+
 use smoltcp::iface::SocketStorage;
 
 #[entry]
@@ -55,9 +58,13 @@ fn main() -> ! {
     let res: Result<(heapless::Vec<AccessPointInfo, 10>, usize), WifiError> = controller.scan_n();
     if let Ok((res, _count)) = res {
         for ap in res {
+            let mut bssid: String<12> = String::new();
+            for byte in ap.bssid.iter() {
+                let _ = write!(bssid, "{:02X}", byte);
+            }
             println!(
-                "\r{} | {:?} | {} | {} | {:?}",
-                ap.ssid, ap.bssid, ap.channel, ap.signal_strength, ap.auth_method
+                "\r{} | {} | {} | {} | {:?}",
+                ap.ssid, bssid, ap.channel, ap.signal_strength, ap.auth_method
             );
         }
     }
