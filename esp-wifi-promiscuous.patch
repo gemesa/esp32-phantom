@@ -1,0 +1,151 @@
+diff --git a/esp-wifi/Cargo.toml b/esp-wifi/Cargo.toml
+index ed610db..65d0bff 100644
+--- a/esp-wifi/Cargo.toml
++++ b/esp-wifi/Cargo.toml
+@@ -5,6 +5,7 @@ edition = "2021"
+ license = "MIT OR Apache-2.0"
+ 
+ [dependencies]
++esp-println = { version = "0.5.0", features = ["log"] }
+ embedded-hal.workspace = true
+ esp32c3-hal = { workspace = true, optional = true }
+ esp32c2-hal = { workspace = true, optional = true }
+diff --git a/esp-wifi/src/lib.rs b/esp-wifi/src/lib.rs
+index 27609ba..f17b601 100644
+--- a/esp-wifi/src/lib.rs
++++ b/esp-wifi/src/lib.rs
+@@ -255,6 +255,68 @@ pub fn initialize(
+     Ok(())
+ }
+ 
++#[cfg(any(feature = "esp32", feature = "esp32s3", feature = "esp32s2"))]
++/// Initialize for using WiFi / BLE
++/// This will initialize internals and also initialize WiFi and BLE
++pub fn initialize_prom(
++    timg1_timer0: hal::timer::Timer<hal::timer::Timer0<hal::peripherals::TIMG1>>,
++    rng: hal::Rng,
++    radio_clocks: hal::system::RadioClockControl,
++    clocks: &Clocks,
++) -> Result<(), InitializationError> {
++    init_heap();
++
++    if clocks.cpu_clock != MegahertzU32::MHz(240) {
++        return Err(InitializationError::WrongClockConfig);
++    }
++
++    #[cfg(feature = "esp32s3")]
++    unsafe {
++        // should be done by the HAL in `ClockControl::configure`
++        const ETS_UPDATE_CPU_FREQUENCY: u32 = 0x40001a4c;
++
++        // cast to usize is just needed because of the way we run clippy in CI
++        let rom_ets_update_cpu_frequency: fn(ticks_per_us: u32) =
++            core::mem::transmute(ETS_UPDATE_CPU_FREQUENCY as usize);
++
++        rom_ets_update_cpu_frequency(240); // we know it's 240MHz because of the check above
++    }
++
++    phy_mem_init();
++    init_radio_clock_control(radio_clocks);
++    init_rng(rng);
++    init_tasks();
++    setup_timer_isr(timg1_timer0);
++    wifi_set_log_verbose();
++    init_clocks();
++    init_buffer();
++
++    #[cfg(coex)]
++    {
++        let res = crate::wifi::coex_initialize();
++        if res != 0 {
++            return Err(InitializationError::General(res));
++        }
++    }
++
++    #[cfg(feature = "wifi")]
++    {
++        log::debug!("wifi init");
++        crate::wifi::wifi_init_prom()?;
++    }
++
++    #[cfg(feature = "ble")]
++    {
++        // ble init
++        // for some reason things don't work when initializing things the other way around
++        // while the original implementation in NuttX does it like that
++        log::debug!("ble init");
++        crate::ble::ble_init();
++    }
++
++    Ok(())
++}
++
+ pub fn wifi_set_log_verbose() {
+     #[cfg(feature = "wifi-logs")]
+     unsafe {
+diff --git a/esp-wifi/src/wifi/mod.rs b/esp-wifi/src/wifi/mod.rs
+index b280ff9..be26a5e 100644
+--- a/esp-wifi/src/wifi/mod.rs
++++ b/esp-wifi/src/wifi/mod.rs
+@@ -33,6 +33,11 @@ use esp_wifi_sys::include::wifi_mode_t_WIFI_MODE_NULL;
+ use num_derive::FromPrimitive;
+ use num_traits::FromPrimitive;
+ 
++use esp_println::println;
++use esp_wifi_sys::include::esp_wifi_set_promiscuous;
++use esp_wifi_sys::include::esp_wifi_set_promiscuous_rx_cb;
++use esp_wifi_sys::include::esp_wifi_set_channel;
++
+ #[doc(hidden)]
+ pub use os_adapter::*;
+ use smoltcp::phy::{Device, DeviceCapabilities, RxToken, TxToken};
+@@ -600,6 +605,49 @@ pub fn wifi_init() -> Result<(), WifiError> {
+     }
+ }
+ 
++pub fn wifi_init_prom() -> Result<(), WifiError> {
++    unsafe {
++        G_CONFIG.wpa_crypto_funcs = g_wifi_default_wpa_crypto_funcs;
++        G_CONFIG.feature_caps = g_wifi_feature_caps;
++
++        crate::wifi_set_log_verbose();
++
++        #[cfg(coex)]
++        {
++            esp_wifi_result!(coex_init())?;
++        }
++
++        esp_wifi_result!(esp_wifi_init_internal(&G_CONFIG))?;
++        esp_wifi_result!(esp_wifi_set_mode(wifi_mode_t_WIFI_MODE_NULL))?;
++
++        crate::wifi_set_log_verbose();
++
++        esp_wifi_result!(esp_wifi_set_promiscuous(true))?;
++        esp_wifi_result!(esp_wifi_set_promiscuous_rx_cb(Some(recv_cb_prom)))?;
++        esp_wifi_result!(esp_wifi_set_channel(1, 0))?;
++
++        #[cfg(any(feature = "esp32", feature = "esp32s3"))]
++        {
++            static mut NVS_STRUCT: [u32; 12] = [0; 12];
++            crate::common_adapter::chip_specific::g_misc_nvs =
++                &NVS_STRUCT as *const _ as *const u32 as u32;
++        }
++
++        Ok(())
++    }
++}
++
++unsafe extern "C" fn recv_cb_prom(
++    buffer: *mut crate::binary::c_types::c_void,
++    len: u32,
++) {
++    println!{"\rgot packet"};
++    let src = core::slice::from_raw_parts_mut(buffer as *mut u8, len as usize);
++    let packet = DataFrame::from_bytes(src);
++    println!{"{:?}", src};
++    println!{"{:?}", packet};
++}
++
+ unsafe extern "C" fn recv_cb(
+     buffer: *mut crate::binary::c_types::c_void,
+     len: u16,
