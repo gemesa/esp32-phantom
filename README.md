@@ -69,7 +69,7 @@ xxxxx | XXXXXXXXXXXX | 11 | -86 | WPA2Personal
 
 ### Promiscuous mode
 
-This mode can not be activated with the current latest version of esp-wifi because `queue_msg_waiting()` is not implemented yet and this function is mandatory for promiscuous mode:
+This mode can not be activated with the current latest version [(8e35b68)](https://github.com/esp-rs/esp-wifi/tree/8e35b68c4aaed2c6a4d1159dd1c1287a5a2359be) of esp-wifi because `queue_msg_waiting()` is not implemented yet and this function is mandatory for promiscuous mode:
 
 ```
 cat esp-wifi/src/wifi/os_adapter.rs
