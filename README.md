@@ -142,3 +142,7 @@ $ cargo build --release --examples --features "esp32,wifi"
 ```
 
 [prom-mon.c](https://www.hackster.io/p99will/esp32-wifi-mac-scanner-sniffer-promiscuous-4c12f4) has been used as a reference to set promiscuous mode.
+
+### pcap logging
+
+pcap (packet capture) is a container for packets captured on the WiFi network. Promiscuous mode is a prerequisite for this.
